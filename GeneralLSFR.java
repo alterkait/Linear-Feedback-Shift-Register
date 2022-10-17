@@ -5,16 +5,16 @@ import java.util.Scanner;
 
 public class GeneralLSFR {
 	
-	public static final ArrayList<String> register = new ArrayList<>();			//initial list from user input : "010101"
+	public static final ArrayList<String> register = new ArrayList<>();		//initial list from user input : "010101"
 	public static final ArrayList<Integer> integerRegister = new ArrayList<>();	//converted list to integer form : 010101
 	public static final ArrayList<Boolean> booleanRegister = new ArrayList<>();	//converted list to boolean form : false,true,false,true
-	public static final ArrayList<Integer> taps = new ArrayList<>();			//indexes of tap-sequences for booleanRegister 
+	public static final ArrayList<Integer> taps = new ArrayList<>();		//indexes of tap-sequences for booleanRegister 
 	
 	public static final Scanner in = new Scanner(System.in);  
 	
 	//boolean method taking register and taps lists, and size of taps list as parameters
 	static boolean xorRegister(ArrayList<Boolean> booleanRegister,
-			ArrayList<Integer> taps, int n) {
+		ArrayList<Integer> taps, int n) {
 		
 		//initialise variable as anything
 		boolean xor = false;
@@ -24,8 +24,8 @@ public class GeneralLSFR {
 			xor = xor ^ booleanRegister.get(taps.get(i));
 		}
 		
-		//return least significant bit (output)
-		return xor;
+	//return least significant bit (output)
+	return xor;
 	}
 	
 	//public method to initialise Register initial state from user input
@@ -82,7 +82,7 @@ public class GeneralLSFR {
 	//main entry point
 	public static void main(String [] args) {
 		
-		//run public methods
+	    //run public methods
 	    initialiseRegister();
 	    System.out.println("Register Size: " + integerRegister.size() + " bits");
 	    convertRegisterToBoolean();
@@ -99,16 +99,16 @@ public class GeneralLSFR {
 	    //replacing i=0 with XOR operation result
 	    System.out.println("Next bitstream (including initial state):");
 	    for(int i=0; i<=29; i++) {
-			boolean tapXor = xorRegister(booleanRegister, taps, n);
+		boolean tapXor = xorRegister(booleanRegister, taps, n);
 			
-			System.out.println((i+1) + " : " + booleanRegister);
+		System.out.println((i+1) + " : " + booleanRegister);
 			
-			for(int j = booleanRegister.size() - 1; j>0; j--) {
-				booleanRegister.set(j, booleanRegister.get(j-1));
-			}
-			booleanRegister.set(0, tapXor);
-			
+		for(int j = booleanRegister.size() - 1; j>0; j--) {
+			booleanRegister.set(j, booleanRegister.get(j-1));
 		}
+		booleanRegister.set(0, tapXor);
+			
+	    }
 	   
 	}
 
