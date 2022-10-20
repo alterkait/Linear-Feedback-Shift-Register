@@ -1,20 +1,27 @@
 package lfsr;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class GeneralLSFR {
 	
-	public static final ArrayList<String> register = new ArrayList<>();		//initial list from user input : "010101"
+	public static final ArrayList<String> register = new ArrayList<>();			//initial list from user input : "010101"
 	public static final ArrayList<Integer> integerRegister = new ArrayList<>();	//converted list to integer form : 010101
 	public static final ArrayList<Boolean> booleanRegister = new ArrayList<>();	//converted list to boolean form : false,true,false,true
-	public static final ArrayList<Integer> taps = new ArrayList<>();		//indexes of tap-sequences for booleanRegister 
+	public static final ArrayList<Integer> taps = new ArrayList<>();			//indexes of tap-sequences for booleanRegister 
+	
+	public static final ArrayList<Boolean> xorResults = new ArrayList<>();
+	public static final ArrayList<Integer> xorResultsInteger = new ArrayList<>();
 	
 	public static final Scanner in = new Scanner(System.in);  
 	
 	//boolean method taking register and taps lists, and size of taps list as parameters
 	static boolean xorRegister(ArrayList<Boolean> booleanRegister,
-		ArrayList<Integer> taps, int n) {
+			ArrayList<Integer> taps, int n) {
 		
 		//initialise variable as anything
 		boolean xor = false;
@@ -24,8 +31,8 @@ public class GeneralLSFR {
 			xor = xor ^ booleanRegister.get(taps.get(i));
 		}
 		
-	//return least significant bit (output)
-	return xor;
+		//return least significant bit (output)
+		return xor;
 	}
 	
 	//public method to initialise Register initial state from user input
@@ -51,6 +58,7 @@ public class GeneralLSFR {
 		for(int i=0; i< integerRegister.size(); i++) {
 	    	if(integerRegister.get(i).equals(0)) {
 	    		booleanRegister.add(false);
+	    		
 	    	}
 	    	else {
 	    		booleanRegister.add(true);
@@ -80,9 +88,18 @@ public class GeneralLSFR {
 	}
 	
 	//main entry point
-	public static void main(String [] args) {
+	public static void main(String [] args) throws IOException{
+		//BufferedWriter writer = new BufferedWriter(new FileWriter(new File("C:\\Users\\alter\\eclipse-workspace\\FundamentalCybersecurity\\src\\lfsr\\output.txt")));
+
+		File file = new File("C:\\Users\\alter\\eclipse-workspace\\FundamentalCybersecurity\\src\\lfsr\\output.csv");
+        FileWriter fw = new FileWriter(file);
+        BufferedWriter bw = new BufferedWriter(fw);
+        bw.write("output");
+        bw.newLine();
 		
-	    //run public methods
+		ArrayList<Integer> booleanRegisterBinaryForm = new ArrayList<>(); 	//List for outputting in integer form 
+		
+		//run public methods
 	    initialiseRegister();
 	    System.out.println("Register Size: " + integerRegister.size() + " bits");
 	    convertRegisterToBoolean();
@@ -99,16 +116,51 @@ public class GeneralLSFR {
 	    //replacing i=0 with XOR operation result
 	    System.out.println("Next bitstream (including initial state):");
 	    for(int i=0; i<=29; i++) {
-		boolean tapXor = xorRegister(booleanRegister, taps, n);
+			boolean tapXor = xorRegister(booleanRegister, taps, n);
 			
-		System.out.println((i+1) + " : " + booleanRegister);
+			//iterate over every boolean and add it to [0,1,1,0] register for output form
+			for(boolean binaries : booleanRegister) {
+				if(binaries == true) {
+					booleanRegisterBinaryForm.add(1);
+				}
+				else {
+					booleanRegisterBinaryForm.add(0);
+				}
+			}
 			
-		for(int j = booleanRegister.size() - 1; j>0; j--) {
-			booleanRegister.set(j, booleanRegister.get(j-1));
+			//System.out.println((i+1) + " : " + booleanRegister);
+			System.out.println((i+1) + " : " + booleanRegisterBinaryForm + tapXor);
+			xorResults.add(tapXor);
+			
+			if(tapXor == true) {
+				xorResultsInteger.add(1);
+			}
+			else {
+				xorResultsInteger.add(0);
+			}
+			
+			//reset the register 
+			booleanRegisterBinaryForm.removeAll(booleanRegisterBinaryForm);
+			
+			
+			
+			for(int j = booleanRegister.size() - 1; j>0; j--) {
+				booleanRegister.set(j, booleanRegister.get(j-1));
+			}
+			booleanRegister.set(0, tapXor);
+			
 		}
-		booleanRegister.set(0, tapXor);
-			
+	    System.out.println(xorResults);
+	    System.out.println(xorResultsInteger);
+	    
+	    for(int i=0; i<xorResultsInteger.size(); i++) {
+	    	bw.write(xorResultsInteger.get(i));
+	    	bw.newLine();
 	    }
+	    
+	    bw.close();
+	    fw.close();
+	   
 	   
 	}
 
